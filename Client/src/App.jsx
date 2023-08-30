@@ -6,12 +6,16 @@ function lerp( a, b, alpha ) {
 }
 
 function App() {
+  
   const [TextAreaValue, SetTextAreaValue] = useState("");
+  const [Username, Set_Username] = useState("");
 
   const [AllowedChars] = useState(Get_Allowed_Chars());
   const [Prompt] = useState(Get_Prompt());
 
   const [Done, SetDone] = useState(false);
+  const [StoryDone, SetStoryDone] = useState(false);
+
   const [HasError, SetHasError] = useState(false);
 
   function Get_Allowed_Chars() {
@@ -29,7 +33,7 @@ function App() {
   
   function Send_Data() {
     fetch("localhost://8000", {method : "POST", body : {
-      Username : "Test",
+      Username : Username,
       Story : TextAreaValue,
       AllowedChars : AllowedChars,
     }})
@@ -39,20 +43,24 @@ function App() {
 
   return (
     <>
-      { !Done ?
-        <div>
-          <p>Schrijf een verhaaltje in {AllowedChars} tekens over {Prompt}</p>
-          <textarea value={TextAreaValue} onChange={(event) => {Update_Text_Area(event)}}></textarea>
+      { !StoryDone ?
+          <div>
+            <p>Schrijf een verhaaltje in {AllowedChars} tekens over {Prompt}</p>
+            <textarea value={TextAreaValue} onChange={(event) => {Update_Text_Area(event)}}></textarea>
 
-          <p style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars)}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars))}, 0)`}}>{AllowedChars - TextAreaValue.length}</p>
-          
-          <button onClick={() => {Send_Data()}}>Verstuur</button>
-          {HasError ? <p>Er is iets fout gegaan, probeer het nog eens!</p> : null}
-        </div> :
+            <p style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars)}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars))}, 0)`}}>{AllowedChars - TextAreaValue.length}</p>
+            
+            <button onClick={() => {SetStoryDone(true);}}>Volgende</button>
+            {HasError ? <p>Er is iets fout gegaan, probeer het nog eens!</p> : null} 
+          </div> : !Done ?
+              <div>
+                <input value={Username} placeholder="Je naam:" onChange={(event) => {Set_Username(event.target.value);}}></input>
+                <button onClick={() => {Send_Data()}}>Verstuur</button>
+              </div> :
 
-        <div>
-          <p>Bedankt voor uw tijd!</p>
-        </div>
+              <div>
+                <p>Bedankt voor uw tijd!</p>
+              </div>
       }
     </>
   );

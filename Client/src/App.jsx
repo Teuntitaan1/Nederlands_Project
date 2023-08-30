@@ -47,7 +47,7 @@ function App() {
   return (
     <>
       { 
-        !HasStarted ?
+        HasStarted ?
           !StoryDone ?
               <>
 

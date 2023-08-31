@@ -1,7 +1,7 @@
 import './App.css';
 import { useState} from 'react';
 
-const URL = "localhost://8000";
+const URL = "http://localhost:3000";
 
 function lerp( a, b, alpha ) {
   return a + alpha * ( b - a );
@@ -35,11 +35,11 @@ function App() {
   }
   
   function Send_Data() {
-    fetch(URL, {method : "POST", body : {
+    fetch(URL, {method : "POST", body : JSON.stringify({
       Username : Username !== "" ? Username : "Anoniem",
       Story : TextAreaValue,
       AllowedChars : AllowedChars,
-    }})
+    })})
     .then(() => {SetDone(true);})
     .catch(() => {SetHasError(true)});
   }

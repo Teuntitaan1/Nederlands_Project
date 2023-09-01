@@ -27,7 +27,7 @@ function App() {
 
   // returns the test parameters
   function Get_Allowed_Chars() {
-    return [50, 100, 200, 500, 1000000][Math.round( 4 * Math.random())];
+    return [50, 100, 200, 500, 1000][Math.round( 4 * Math.random())];
   }
     // returns the test parameters
   function Get_Prompt() {
@@ -36,9 +36,10 @@ function App() {
   
   function Send_Data() {
     fetch(URL, {method : "POST", body : JSON.stringify({
-      Username : Username !== "" ? Username : "Anoniem",
+      Username : Username !== "" && Username.length > 3 ? Username : "Anoniem",
       Story : TextAreaValue,
       AllowedChars : AllowedChars,
+      Prompt : Prompt
     })})
     .then(() => {SetDone(true);})
     .catch(() => {SetHasError(true)});

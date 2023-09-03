@@ -1,4 +1,14 @@
-.Container {
-    display: flex;
-    justify-content: center;
+#Root_Container {
+    text-align: center;
+}
+#Error_Message {
+    color: red;
+    font-style: italic;
+}
+
+textarea {
+    width: 75%;
+    height: 50vh;
+    resize: none;
+    background-color: #eeeeee;
 }

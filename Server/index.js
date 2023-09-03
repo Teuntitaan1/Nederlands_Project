@@ -21,6 +21,15 @@ app.post('/', async (req, res) => {
     res.send("GOT DATA");
 });
 
+app.get('/', async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    
+    const DATA = JSON.stringify( await Client.connect().then(() => {Client.db("File-Server").collection("Nederlands_Onderzoek").find({})}));
+
+    res.status = 200;
+    res.send(DATA);
+});
+
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });

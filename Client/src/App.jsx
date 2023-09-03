@@ -1,6 +1,6 @@
 import './App.css';
 import { useState } from 'react';
-const URL = "http://localhost:3000";
+const URL = process.env.SERVERURL;
 import BedanktGifje from '../assets/BedanktGifje.gif';
 
 function lerp( a, b, alpha ) {

@@ -5,7 +5,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express();
 app.use(express.text());
 
-const uri = "mongodb+srv://ADMIN:Teunjoppedaan1@file-server.cb2oiri.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.DATABASEKEY;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const Client = new MongoClient(uri, {serverApi: {version: ServerApiVersion.v1, strict: true, deprecationErrors: true,}});
 
@@ -22,5 +22,5 @@ app.post('/', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
+    console.log(`listening on port ${port}`);
 });

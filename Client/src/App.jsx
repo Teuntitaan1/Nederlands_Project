@@ -1,6 +1,5 @@
 import './App.css';
 import { useState } from 'react';
-const URL = process.env.SERVERURL;
 import BedanktGifje from '../assets/BedanktGifje.gif';
 
 function lerp( a, b, alpha ) {
@@ -29,7 +28,7 @@ function App() {
   const [HasClientError, SetHasClientError] = useState(false);
   
   function Send_Data() {
-    fetch(URL, {method : "POST", body : JSON.stringify({
+    fetch("https://nederlands-onderzoek-server.onrender.com", {method : "POST", body : JSON.stringify({
       Username : Username !== "" && Username.length > 3 ? Username : "Anoniem",
       Story : TextAreaValue,
       AllowedChars : AllowedChars,

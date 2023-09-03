@@ -7,7 +7,8 @@ function lerp( a, b, alpha ) {
   return a + alpha * ( b - a );
 }
 
-
+const Allowed_Chars = [50, 100, 500, 1000, Infinity];
+const Prompts = ["een nieuwsbericht over een gestorven eend"];
 
 function App() {
   
@@ -16,8 +17,8 @@ function App() {
   const [Username, SetUsername] = useState("");
 
   // Test parameter variables
-  const [AllowedChars] = useState(Get_Allowed_Chars());
-  const [Prompt] = useState(Get_Prompt());
+  const [AllowedChars] = useState(Allowed_Chars[Math.round( Allowed_Chars.length * Math.random())]);
+  const [Prompt] = useState(Prompts[Math.round( Prompts.length * Math.random())]);
 
   // program variables
   const [HasStarted, SetHasStarted] = useState(false);
@@ -26,16 +27,6 @@ function App() {
 
   const [HasServerError, SetHasServerError] = useState(false);
   const [HasClientError, SetHasClientError] = useState(false);
-  // returns the test parameters
-  function Get_Allowed_Chars() {
-    const Allowed_Chars = [50, 100, 500, 1000, Infinity]
-    return Allowed_Chars[Math.round( Allowed_Chars.length * Math.random())];
-  }
-    // returns the test parameters
-  function Get_Prompt() {
-    const Prompts = ["een nieuwsbericht over een gestorven eend"]
-    return Prompts[Math.round( Prompts.length * Math.random())];
-  }
   
   function Send_Data() {
     fetch(URL, {method : "POST", body : JSON.stringify({

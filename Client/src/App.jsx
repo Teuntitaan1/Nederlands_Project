@@ -2,6 +2,9 @@ import './App.css';
 import { useState } from 'react';
 import BedanktGifje from '../assets/BedanktGifje.gif';
 
+// Stops auto zooming on ios
+if(navigator.userAgent.indexOf('iPhone') > -1 ) { document.querySelector("[name=viewport]").setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1");}
+
 function lerp( a, b, alpha ) {
   return a + alpha * ( b - a );
 }

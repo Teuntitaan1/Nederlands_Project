@@ -8,7 +8,7 @@ app.use(express.text());
 const uri = process.env.DATABASEKEY;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const Client = new MongoClient(uri, {serverApi: {version: ServerApiVersion.v1, strict: true, deprecationErrors: true,}});
-Client.connect.then(() => {console.log("Database connected!")});
+Client.connect().then(() => {console.log("Database connected!")});
 
 const port = 3000;
 

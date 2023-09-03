@@ -17,8 +17,8 @@ function App() {
   const [Username, SetUsername] = useState("");
 
   // Test parameter variables
-  const [AllowedChars] = useState(Allowed_Chars[Math.round( Allowed_Chars.length * Math.random())]);
-  const [Prompt] = useState(Prompts[Math.round( Prompts.length * Math.random())]);
+  const [AllowedChars] = useState(Allowed_Chars[Math.round( 4 * Math.random())]);
+  const [Prompt] = useState(Prompts[Math.round( 0 * Math.random())]);
 
   // program variables
   const [HasStarted, SetHasStarted] = useState(false);

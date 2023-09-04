@@ -27,17 +27,21 @@ function App() {
   const [Done, SetDone] = useState(false);
   const [StoryDone, SetStoryDone] = useState(false);
 
+  const [Loading, Set_Loading] = useState(false);
+
   const [HasServerError, SetHasServerError] = useState(false);
   const [HasClientError, SetHasClientError] = useState(false);
   
   function Send_Data() {
+    Set_Loading(true);
+
     fetch("https://nederlands-onderzoek-server.onrender.com", {method : "POST", body : JSON.stringify({
       Username : Username !== "" && Username.length > 3 ? Username : "Anoniem",
       Story : TextAreaValue,
       AllowedChars : AllowedChars,
       Prompt : Prompt,
       Date : Date.now()
-    })}).then(() => {SetDone(true);}).catch(() => {SetHasServerError(true)});
+    })}).then(() => {SetDone(true); Set_Loading(false)}).catch(() => {SetHasServerError(true); Set_Loading(false)});
   }
 
   return (
@@ -68,8 +72,9 @@ function App() {
                     <div>
                       <button onClick={() => {SetStoryDone(false); SetHasClientError(false);}}>Ga terug</button>
                       <input value={Username} placeholder="Je naam: Anoniem" onChange={(event) => {SetUsername(event.target.value);}} maxLength={16}></input>
-                      <button onClick={() => {Send_Data()}}>Verstuur</button>
+                      <button onClick={() => {if(!Loading) {Send_Data()}}}>Verstuur</button>
                     </div>
+                    {Loading ? <p id='Loading_Message'>Aan het versturen...</p> : null}
                     {HasServerError ? <p id='Error_Message'>Er is iets fout gegaan, probeer het nog eens!</p> : null}
                   </> :
                   <>

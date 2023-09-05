@@ -12,3 +12,24 @@ textarea {
     resize: none;
     background-color: #eeeeee;
 }
+
+img {
+    width: 95vw;
+}
+
+button {
+    border-radius: 0px;
+    background-color: #dddddd;
+    font-weight: bold;
+    font-style: italic;
+}
+
+#Loading_Message {
+    font-style: italic;
+    font-weight: bold;
+}
+
+#Thanks_Message {
+    font-weight: 600;
+    font-style: italic;
+}

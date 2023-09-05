@@ -51,6 +51,10 @@ function App() {
           !StoryDone ?
               <>
                 <h1>Daar gaan we dan!</h1>
+
+                {HasClientError ? <p id='Error_Message'>Het tekstveld is leeg! Vul iets in en probeer het opnieuw</p> : null} 
+                
+                <p style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars)}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars))}, 0)`}}>Nog {AllowedChars !== Infinity ? AllowedChars - TextAreaValue.length : "oneindig"} tekens over</p>
                 <p>Schrijf een verhaaltje {AllowedChars !== Infinity ? `in ${AllowedChars} tekens` : null} over {Prompt}. {AllowedChars === Infinity ? "Er is geen woord limiet" : null}</p>
                 <textarea
                   value={TextAreaValue}
@@ -58,12 +62,10 @@ function App() {
                   maxLength={AllowedChars}
                   placeholder={`Uw verhaaltje over ${Prompt}:`}/>
 
-                <p style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars)}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars))}, 0)`}}>Nog {AllowedChars !== Infinity ? AllowedChars - TextAreaValue.length : "oneindig"} tekens over</p>
                 <div>
-                  <button onClick={() => {SetHasStarted(false);}}>Terug</button> 
-                  <button onClick={() => {TextAreaValue.length > 0 ? SetStoryDone(true) : SetHasClientError(true);}}>Volgende</button>
+                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {SetHasStarted(false);}}>Terug</button> 
+                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {TextAreaValue.length > 0 ? SetStoryDone(true) : SetHasClientError(true);}}>Volgende</button>
                 </div>
-                {HasClientError ? <p id='Error_Message'>Het tekstveld is leeg! Vul iets in en probeer het opnieuw</p> : null} 
               </> : !Done ?
                   <>
                     <h1>Bijna klaar!</h1>
@@ -78,14 +80,15 @@ function App() {
                     {HasServerError ? <p id='Error_Message'>Er is iets fout gegaan, probeer het nog eens!</p> : null}
                   </> :
                   <>
-                    <p>Verstuurd! Bedankt voor uw tijd :)</p>
+                    <p id='Thanks_Message'>Verstuurd! Bedankt voor uw tijd :)</p>
                     <img src={BedanktGifje}></img>
+                    <button style={{width : "25vw", height : "5vh"}} onClick={() => {location.reload()}}>Reset</button> 
                   </>
         :
         <>
           <h1>Welkom bij ons Nederlands onderzoek!</h1>
           <p>Ons onderzoek gaat over het veranderen van de taal die mensen gebruiken om een onderwerp te omschrijven wanneer hij/zij een letterlimiet voorgeschoteld krijgt. Hier kunt u ons bij helpen door een verhaaltje te schrijven.</p>
-          <button onClick={() => {SetHasStarted(true);}}>Beginnen</button> 
+          <button style={{width : "50vw", height : "10vh"}} onClick={() => {SetHasStarted(true);}}>Beginnen</button> 
         </>
       }
     </div>

@@ -54,13 +54,17 @@ function App() {
 
                 {HasClientError ? <p id='Error_Message'>Het tekstveld is leeg! Vul iets in en probeer het opnieuw</p> : null} 
                 
-                <p style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars)}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars))}, 0)`}}>Nog {AllowedChars !== Infinity ? AllowedChars - TextAreaValue.length : "oneindig"} tekens over</p>
+                
                 <p>Schrijf een verhaaltje {AllowedChars !== Infinity ? `in ${AllowedChars} tekens` : null} over {Prompt}. {AllowedChars === Infinity ? "Er is geen woord limiet" : null}</p>
-                <textarea
-                  value={TextAreaValue}
-                  onChange={(event) => {SetTextAreaValue(event.target.value)}}
-                  maxLength={AllowedChars}
-                  placeholder={`Uw verhaaltje over ${Prompt}:`}/>
+                <div>
+                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars)}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars))}, 0)`,}}>Nog {AllowedChars !== Infinity ? AllowedChars - TextAreaValue.length : "oneindig"} tekens over</p>
+                  <textarea
+                    value={TextAreaValue}
+                    onChange={(event) => {SetTextAreaValue(event.target.value)}}
+                    maxLength={AllowedChars}
+                    placeholder={`Uw verhaaltje over ${Prompt}:`}/>
+                </div>
+                
 
                 <div>
                   <button style={{width : "25vw", height : "5vh"}} onClick={() => {SetHasStarted(false);}}>Terug</button> 

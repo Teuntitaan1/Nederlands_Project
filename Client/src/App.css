@@ -20,6 +20,7 @@ img {
 button {
     border-radius: 0px;
     background-color: #dddddd;
+    color: #000;
     font-weight: bold;
     font-style: italic;
 }
@@ -32,4 +33,10 @@ button {
 #Thanks_Message {
     font-weight: 600;
     font-style: italic;
+}
+
+#Letter_Counter {
+    position : fixed;
+    left : 10;
+    bottom: 0;
 }

@@ -76,9 +76,9 @@ function App() {
                     <p>We hebben alleen nog uw naam nodig, geen behoefte deze te geven? Laat hem dan leeg!</p>
                     
                     <div>
-                      <button onClick={() => {SetStoryDone(false); SetHasClientError(false);}}>Ga terug</button>
-                      <input value={Username} placeholder="Je naam: Anoniem" onChange={(event) => {SetUsername(event.target.value);}} maxLength={16}></input>
-                      <button onClick={() => {if(!Loading) {Send_Data()}}}>Verstuur</button>
+                      <button style={{width : "20vw", height : "6vh"}} onClick={() => {SetStoryDone(false); SetHasClientError(false);}}>Ga terug</button>
+                      <input style={{width : "50vw", height : "5vh"}} value={Username} placeholder="Je naam: Anoniem" onChange={(event) => {SetUsername(event.target.value);}} maxLength={16}></input>
+                      <button style={{width : "20vw", height : "6vh"}} onClick={() => {if(!Loading) {Send_Data()}}}>Verstuur</button>
                     </div>
                     {Loading ? <p id='Loading_Message'>Aan het versturen...</p> : null}
                     {HasServerError ? <p id='Error_Message'>Er is iets fout gegaan, probeer het nog eens!</p> : null}

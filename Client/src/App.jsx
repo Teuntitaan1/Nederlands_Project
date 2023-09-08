@@ -9,8 +9,8 @@ function lerp( a, b, alpha ) {
   return a + alpha * ( b - a );
 }
 
-const Allowed_Chars = [50, 100, 500, 1000, Infinity];
-const Prompts = ["een nieuwsbericht over een gestorven eend"];
+const Allowed_Chars_Ranges = [[50, 100], [100, 150], [200, 250], [1000, 1100], [0, Infinity]];
+const Prompts = ["Een fictief over het ontploffen van een atoombom in Amsterdam, doe dit in de stijl van een nieuwsbericht van de NOS, laat hier geen mening in doorschijnen"];
 
 function App() {
   
@@ -19,7 +19,7 @@ function App() {
   const [Username, SetUsername] = useState("");
 
   // Test parameter variables
-  const [AllowedChars] = useState(Allowed_Chars[Math.round( 4 * Math.random())]);
+  const [AllowedChars] = useState(Allowed_Chars_Ranges[Math.round( 4 * Math.random())]);
   const [Prompt] = useState(Prompts[Math.round( 0 * Math.random())]);
 
   // program variables
@@ -52,23 +52,26 @@ function App() {
               <>
                 <h1>Daar gaan we dan!</h1>
 
-                {HasClientError ? <p id='Error_Message'>Het tekstveld is leeg! Vul iets in en probeer het opnieuw</p> : null} 
+                {HasClientError ? <p id='Error_Message'>Nog niet genoeg tekens! Vul iets meer in en probeer het opnieuw</p> : null} 
                 
                 
-                <p>Schrijf een verhaaltje {AllowedChars !== Infinity ? `in ${AllowedChars} tekens` : null} over {Prompt}. {AllowedChars === Infinity ? "Er is geen woord limiet" : null}</p>
+                <p>Schrijf een verhaaltje {AllowedChars[1] !== Infinity ? `van tussen de ${AllowedChars[0]} en ${AllowedChars[1]} tekens` : null} over {Prompt}. {AllowedChars[1] === Infinity ? "Er is geen woord limiet" : null}</p>
                 <div>
-                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars)}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars))}, 0)`,}}>Nog {AllowedChars !== Infinity ? AllowedChars - TextAreaValue.length : "oneindig"} tekens over</p>
-                  <textarea
+                  
+                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars[1])}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars[1]))}, 0)`,}}>Nog {AllowedChars[1] !== Infinity ? AllowedChars[1] - TextAreaValue.length : "oneindig"} tekens {TextAreaValue.length > AllowedChars[0] ? "over" : "te typen"}</p>
+
+                <textarea
                     value={TextAreaValue}
                     onChange={(event) => {SetTextAreaValue(event.target.value)}}
-                    maxLength={AllowedChars}
+                    minLength={AllowedChars[0]}
+                    maxLength={AllowedChars[1]}
                     placeholder={`Uw verhaaltje over ${Prompt}:`}/>
                 </div>
                 
 
                 <div>
                   <button style={{width : "25vw", height : "5vh"}} onClick={() => {SetHasStarted(false);}}>Terug</button> 
-                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {TextAreaValue.length > 0 ? SetStoryDone(true) : SetHasClientError(true);}}>Volgende</button>
+                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {TextAreaValue.length > AllowedChars[0] ? SetStoryDone(true) : SetHasClientError(true);}}>Volgende</button>
                 </div>
               </> : !Done ?
                   <>

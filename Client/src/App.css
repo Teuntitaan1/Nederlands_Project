@@ -34,3 +34,14 @@ button {
     font-weight: 600;
     font-style: italic;
 }
+
+footer {
+    font-size: .7rem;
+    font-weight: bold;
+    font-style: italic;
+    opacity: .5;
+}
+
+span {
+    font-weight: bold;
+}

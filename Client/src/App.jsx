@@ -1,27 +1,21 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import BedanktGifje from '../assets/BedanktGifje.gif';
 import { lerp, clamp } from './Functions.jsx';
 
+const Standard_Char_Ranges = [[1, 50], [100, 150], [250, 300], [400, 450], [800, 850], [1000, 1050]]
 
-// Stops auto zooming on ios
-if(navigator.userAgent.indexOf('iPhone') > -1 ) { document.querySelector("[name=viewport]").setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1");}
-
-
-
-const Allowed_Chars_Ranges = [[50, 100], [100, 150], [200, 250], [1000, 1100], [0, Infinity]];
-const Standard_Prompts = ["Een fictief over het ontploffen van een atoombom in Amsterdam, doe dit in de stijl van een nieuwsbericht van de NOS, laat hier geen mening in doorschijnen"];
-
-function App() {
+export default function App(props) {
   
   // Text input variables
   const [Username, SetUsername] = useState("");
-  const [TextAreaValues, SetTextAreaValues] = useState(["", "", ""]);
-  const [Char_Ranges] = useState([[1, 50], [100, 150], [250, 300]]);
+  const [ActiveTextAreaValue, SetActiveTextAreaValue] = useState("");
+  const [TextAreaValues, SetTextAreaValues] = useState(Array(props.AmountOfPrompts).fill(""));
+  const [Char_Ranges] = useState(Standard_Char_Ranges.slice(0, props.AmountOfPrompts));
   const [ActivePrompt, SetActivePrompt] = useState(0);
 
   // Test parameter variables
-  const [Prompt] = useState(Standard_Prompts[Math.round( 0 * Math.random())]);
+  const [Prompt] = useState("Schrijf een fictief verhaal over het ontploffen van een atoombom in Amsterdam, doe dit in de stijl van een nieuwsbericht van de NOS, laat hier geen mening in doorschijnen.");
 
   // program variables
   const [HasStarted, SetHasStarted] = useState(false);
@@ -39,36 +33,46 @@ function App() {
     fetch("https://nederlands-onderzoek-server.onrender.com", {method : "POST", body : JSON.stringify({
       Username : Username !== "" && Username.length > 3 ? Username : "Anoniem",
       TextAreaValues : TextAreaValues,
-      Allowed_Chars_Ranges : Allowed_Chars_Ranges,
+      Char_Ranges : Char_Ranges,
       Prompt : Prompt,
       Date : Date.now()
     })}).then(() => {SetDone(true); Set_Loading(false)}).catch(() => {SetHasServerError(true); Set_Loading(false)});
   }
 
-  function Update_Input(event) {
+  function SaveTextArea() {
     var TextAreaValuesNew = TextAreaValues;
-    TextAreaValuesNew[ActivePrompt] = event.target.value;
+    TextAreaValuesNew[ActivePrompt] = ActiveTextAreaValue;
     SetTextAreaValues(TextAreaValuesNew);
+
   }
 
   function Previous() {
-    SetActivePrompt(clamp(0, 2, ActivePrompt - 1));
+    SaveTextArea();
+
+    SetActivePrompt(clamp(0, TextAreaValues.length - 1, ActivePrompt - 1));
     if (ActivePrompt === 0) {
       SetHasStarted(false);
-    }
+      return }
+    SetActiveTextAreaValue(TextAreaValues[clamp(0, TextAreaValues.length, ActivePrompt - 1)]);
+    SetHasClientError(false);
   }
 
   function Next() {
-    if (TextAreaValues[ActivePrompt].length > Char_Ranges[ActivePrompt][0]) {
-      SetActivePrompt(clamp(0, 2, ActivePrompt + 1));
-      
-      if (ActivePrompt === 2) {
+    SaveTextArea();
+    SetHasClientError(false);
+    
+    if (ActiveTextAreaValue.length >= Char_Ranges[ActivePrompt][0]) {
+      SetActivePrompt(clamp(0, TextAreaValues.length - 1, ActivePrompt + 1));
+      if (ActivePrompt === TextAreaValues.length - 1) {
         SetStoryDone(true);
-      }
+        return }
+      SetActiveTextAreaValue(TextAreaValues[clamp(0, TextAreaValues.length, ActivePrompt + 1)]);
     }
     else {
       SetHasClientError(true);
+      return
     }
+
   }
 
   return (
@@ -77,25 +81,26 @@ function App() {
         HasStarted ?
           !StoryDone ?
               <>
-                <h1>Daar gaan we dan!</h1>
+                <h1>{props.AmountOfPrompts - ActivePrompt < props.AmountOfPrompts ? `Nog maar ${props.AmountOfPrompts - ActivePrompt} ${props.AmountOfPrompts - ActivePrompt !== 1 ? "Verhaaltjes" : "Verhaaltje"}!` : `Daar gaan we dan!`}</h1>
+                {HasClientError ? <p id='Error_Message'>Nog niet genoeg letters! Vul iets meer in en probeer het opnieuw</p> : null} 
+                <p>Schrijf een verhaaltje van tussen de <span>{Char_Ranges[ActivePrompt][0]}</span> en <span>{Char_Ranges[ActivePrompt][1]}</span> letters. De opdracht is: {Prompt}</p>
 
-                {HasClientError ? <p id='Error_Message'>Nog niet genoeg tekens! Vul iets meer in en probeer het opnieuw</p> : null} 
-                
-                
-                <p>Schrijf een verhaaltje van tussen de {Char_Ranges[ActivePrompt][0]} en {Char_Ranges[ActivePrompt][1]} tekens over {Prompt}. </p>
                 <div>
-                  
-                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValues[ActivePrompt].length/Char_Ranges[ActivePrompt][1])}, ${lerp(0, 225, 1-(TextAreaValues[ActivePrompt].length/Char_Ranges[ActivePrompt][1]))}, 0)`,}}>Nog {Char_Ranges[ActivePrompt][1] !== Infinity ? TextAreaValues[ActivePrompt].length > Char_Ranges[ActivePrompt][0] ? Char_Ranges[ActivePrompt][1] - TextAreaValues[ActivePrompt].length : Char_Ranges[ActivePrompt][0] - TextAreaValues[ActivePrompt].length : "oneindig"} tekens {TextAreaValues[ActivePrompt].length > Char_Ranges[ActivePrompt][0] ? "over" : "te typen"}</p>
+                  <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, ActiveTextAreaValue.length/Char_Ranges[ActivePrompt][1])}, ${lerp(0, 225, 1-(ActiveTextAreaValue.length/Char_Ranges[ActivePrompt][1]))}, 0)`,}}>
+                    Nog {ActiveTextAreaValue.length >= Char_Ranges[ActivePrompt][0] ? Char_Ranges[ActivePrompt][1] - ActiveTextAreaValue.length : Char_Ranges[ActivePrompt][0] - ActiveTextAreaValue.length}
+                    {Math.abs(Char_Ranges[ActivePrompt][0] - ActiveTextAreaValue.length) !== 1 ? " letters" : " letter"} 
+                    {ActiveTextAreaValue.length > Char_Ranges[ActivePrompt][0] ? " over" : " te typen"}
+                  </p>
 
-                <textarea
-                    value={TextAreaValues[ActivePrompt]}
-                    onChange={(event) => {Update_Input(event);}}
+                  <textarea
+                    value={ActiveTextAreaValue}
+                    onChange={(event) => {SetActiveTextAreaValue(event.target.value)}}
                     minLength={Char_Ranges[ActivePrompt][0]}
                     maxLength={Char_Ranges[ActivePrompt][1]}
-                    placeholder={`Uw verhaaltje over ${Prompt}:`}/>
+                    placeholder={Prompt}
+                  />
                 </div>
                 
-
                 <div>
                   <button style={{width : "25vw", height : "5vh"}} onClick={() => {Previous();}}>Terug</button> 
                   <button style={{width : "25vw", height : "5vh"}} onClick={() => {Next();}}>Volgende</button>
@@ -120,13 +125,12 @@ function App() {
                   </>
         :
         <>
-          <h1>Welkom bij ons Nederlands onderzoek!</h1>
-          <p>Ons onderzoek gaat over het veranderen van de taal die mensen gebruiken om een onderwerp te omschrijven wanneer hij/zij een letterlimiet voorgeschoteld krijgt. Hier kunt u ons bij helpen door een verhaaltje te schrijven.</p>
+          <h1>Welkom bij ons Nederlands taalkundig onderzoek!</h1>
+          <p>Ons onderzoek gaat over het veranderen van de taal die mensen gebruiken tijdens het schrijven van een tekst wanneer ze maar een bepaald aantal letters mogen gebruiken. Hier kunt u ons bij helpen door een verhaaltje te schrijven, Meer niet! U zal ongeveer 5 a 10 minuten bezig zijn.</p>
           <button style={{width : "50vw", height : "10vh"}} onClick={() => {SetHasStarted(true);}}>Beginnen</button> 
         </>
       }
+      <footer>Teun Weijdener & Niek Rossel</footer>
     </div>
   );
 }
-
-export default App;

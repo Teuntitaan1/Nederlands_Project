@@ -15,18 +15,14 @@ const Standard_Prompts = ["Een fictief over het ontploffen van een atoombom in A
 function App() {
   
   // Text input variables
-  const [TextAreaValue, SetTextAreaValue] = useState("");
   const [Username, SetUsername] = useState("");
-
   const [TextAreaValues, SetTextAreaValues] = useState(["", "", ""]);
   const [Char_Ranges] = useState([[1, 50], [100, 150], [250, 300]]);
   const [ActivePrompt, SetActivePrompt] = useState(0);
 
   // Test parameter variables
-
   const [Prompt] = useState(Standard_Prompts[Math.round( 0 * Math.random())]);
 
-  
   // program variables
   const [HasStarted, SetHasStarted] = useState(false);
   const [Done, SetDone] = useState(false);
@@ -42,11 +38,17 @@ function App() {
 
     fetch("https://nederlands-onderzoek-server.onrender.com", {method : "POST", body : JSON.stringify({
       Username : Username !== "" && Username.length > 3 ? Username : "Anoniem",
-      Story : TextAreaValue,
-      AllowedChars : AllowedChars,
+      TextAreaValues : TextAreaValues,
+      Allowed_Chars_Ranges : Allowed_Chars_Ranges,
       Prompt : Prompt,
       Date : Date.now()
     })}).then(() => {SetDone(true); Set_Loading(false)}).catch(() => {SetHasServerError(true); Set_Loading(false)});
+  }
+
+  function Update_Input(event) {
+    var TextAreaValuesNew = TextAreaValues;
+    TextAreaValuesNew[ActivePrompt] = event.target.value;
+    SetTextAreaValues(TextAreaValuesNew);
   }
 
   function Previous() {
@@ -57,7 +59,7 @@ function App() {
   }
 
   function Next() {
-    if (TextAreaValue.length > Char_Ranges[ActivePrompt][0]) {
+    if (TextAreaValues[ActivePrompt].length > Char_Ranges[ActivePrompt][0]) {
       SetActivePrompt(clamp(0, 2, ActivePrompt + 1));
       
       if (ActivePrompt === 2) {
@@ -83,11 +85,11 @@ function App() {
                 <p>Schrijf een verhaaltje van tussen de {Char_Ranges[ActivePrompt][0]} en {Char_Ranges[ActivePrompt][1]} tekens over {Prompt}. </p>
                 <div>
                   
-                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/Char_Ranges[ActivePrompt][1])}, ${lerp(0, 225, 1-(TextAreaValue.length/Char_Ranges[ActivePrompt][1]))}, 0)`,}}>Nog {Char_Ranges[ActivePrompt][1] !== Infinity ? TextAreaValue.length > Char_Ranges[ActivePrompt][0] ? Char_Ranges[ActivePrompt][1] - TextAreaValue.length : Char_Ranges[ActivePrompt][0] - TextAreaValue.length : "oneindig"} tekens {TextAreaValue.length > Char_Ranges[ActivePrompt][0] ? "over" : "te typen"}</p>
+                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValues[ActivePrompt].length/Char_Ranges[ActivePrompt][1])}, ${lerp(0, 225, 1-(TextAreaValues[ActivePrompt].length/Char_Ranges[ActivePrompt][1]))}, 0)`,}}>Nog {Char_Ranges[ActivePrompt][1] !== Infinity ? TextAreaValues[ActivePrompt].length > Char_Ranges[ActivePrompt][0] ? Char_Ranges[ActivePrompt][1] - TextAreaValues[ActivePrompt].length : Char_Ranges[ActivePrompt][0] - TextAreaValues[ActivePrompt].length : "oneindig"} tekens {TextAreaValues[ActivePrompt].length > Char_Ranges[ActivePrompt][0] ? "over" : "te typen"}</p>
 
                 <textarea
-                    value={TextAreaValue}
-                    onChange={(event) => {SetTextAreaValue(event.target.value)}}
+                    value={TextAreaValues[ActivePrompt]}
+                    onChange={(event) => {Update_Input(event);}}
                     minLength={Char_Ranges[ActivePrompt][0]}
                     maxLength={Char_Ranges[ActivePrompt][1]}
                     placeholder={`Uw verhaaltje over ${Prompt}:`}/>

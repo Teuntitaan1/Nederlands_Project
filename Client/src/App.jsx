@@ -81,7 +81,7 @@ export default function App(props) {
         HasStarted ?
           !StoryDone ?
               <>
-                <h1>{props.AmountOfPrompts - ActivePrompt < props.AmountOfPrompts ? `Nog maar ${props.AmountOfPrompts - ActivePrompt} ${props.AmountOfPrompts - ActivePrompt !== 1 ? "Verhaaltjes" : "Verhaaltje"}!` : `Daar gaan we dan!`}</h1>
+                <h1>{props.AmountOfPrompts - ActivePrompt < props.AmountOfPrompts ? `Nog maar ${props.AmountOfPrompts - ActivePrompt} ${props.AmountOfPrompts - ActivePrompt !== 1 ? "verhaaltjes" : "verhaaltje"}!` : `Daar gaan we dan!`}</h1>
                 {HasClientError ? <p id='Error_Message'>Nog niet genoeg letters! Vul iets meer in en probeer het opnieuw</p> : null} 
                 <p>Schrijf een verhaaltje van tussen de <span>{Char_Ranges[ActivePrompt][0]}</span> en <span>{Char_Ranges[ActivePrompt][1]}</span> letters. De opdracht is: {Prompt}</p>
 

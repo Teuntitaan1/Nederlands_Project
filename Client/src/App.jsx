@@ -1,7 +1,7 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import BedanktGifje from '../assets/BedanktGifje.gif';
-import { lerp } from './Functions.jsx';
+import { lerp, clamp } from './Functions.jsx';
 
 
 // Stops auto zooming on ios
@@ -10,7 +10,7 @@ if(navigator.userAgent.indexOf('iPhone') > -1 ) { document.querySelector("[name=
 
 
 const Allowed_Chars_Ranges = [[50, 100], [100, 150], [200, 250], [1000, 1100], [0, Infinity]];
-const Prompts = ["Een fictief over het ontploffen van een atoombom in Amsterdam, doe dit in de stijl van een nieuwsbericht van de NOS, laat hier geen mening in doorschijnen"];
+const Standard_Prompts = ["Een fictief over het ontploffen van een atoombom in Amsterdam, doe dit in de stijl van een nieuwsbericht van de NOS, laat hier geen mening in doorschijnen"];
 
 function App() {
   
@@ -18,14 +18,15 @@ function App() {
   const [TextAreaValue, SetTextAreaValue] = useState("");
   const [Username, SetUsername] = useState("");
 
-  const [TextAreaValues, SetTextAreaValues] = useState([""]);
-  const [Prompts, SetPrompts] = useState([""]);
+  const [TextAreaValues, SetTextAreaValues] = useState(["", "", ""]);
+  const [Char_Ranges] = useState([[1, 50], [100, 150], [250, 300]]);
   const [ActivePrompt, SetActivePrompt] = useState(0);
 
   // Test parameter variables
-  const [AllowedChars] = useState(Allowed_Chars_Ranges[Math.round( 4 * Math.random())]);
-  const [Prompt] = useState(Prompts[Math.round( 0 * Math.random())]);
 
+  const [Prompt] = useState(Standard_Prompts[Math.round( 0 * Math.random())]);
+
+  
   // program variables
   const [HasStarted, SetHasStarted] = useState(false);
   const [Done, SetDone] = useState(false);
@@ -35,17 +36,6 @@ function App() {
 
   const [HasServerError, SetHasServerError] = useState(false);
   const [HasClientError, SetHasClientError] = useState(false);
-  
-  useEffect(() => {
-    var AmountOfPrompts = Math.round( 2 * Math.random());
-
-    var TextAreaValues = [].fill("", 0, AmountOfPrompts);
-    SetTextAreaValues(TextAreaValues);
-
-    var Prompts = [].fill(Allowed_Chars_Ranges[Math.round( 4 * Math.random())], 0, AmountOfPrompts);
-    SetPrompts(Prompts);
-  }, []);
-  
 
   function Send_Data() {
     Set_Loading(true);
@@ -59,6 +49,26 @@ function App() {
     })}).then(() => {SetDone(true); Set_Loading(false)}).catch(() => {SetHasServerError(true); Set_Loading(false)});
   }
 
+  function Previous() {
+    SetActivePrompt(clamp(0, 2, ActivePrompt - 1));
+    if (ActivePrompt === 0) {
+      SetHasStarted(false);
+    }
+  }
+
+  function Next() {
+    if (TextAreaValue.length > Char_Ranges[ActivePrompt][0]) {
+      SetActivePrompt(clamp(0, 2, ActivePrompt + 1));
+      
+      if (ActivePrompt === 2) {
+        SetStoryDone(true);
+      }
+    }
+    else {
+      SetHasClientError(true);
+    }
+  }
+
   return (
     <div id='Root_Container'>
       { 
@@ -70,23 +80,23 @@ function App() {
                 {HasClientError ? <p id='Error_Message'>Nog niet genoeg tekens! Vul iets meer in en probeer het opnieuw</p> : null} 
                 
                 
-                <p>Schrijf een verhaaltje {AllowedChars[1] !== Infinity ? `van tussen de ${AllowedChars[0]} en ${AllowedChars[1]} tekens` : null} over {Prompt}. {AllowedChars[1] === Infinity ? "Er is geen woord limiet" : null}</p>
+                <p>Schrijf een verhaaltje van tussen de {Char_Ranges[ActivePrompt][0]} en {Char_Ranges[ActivePrompt][1]} tekens over {Prompt}. </p>
                 <div>
                   
-                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars[1])}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars[1]))}, 0)`,}}>Nog {AllowedChars[1] !== Infinity ? TextAreaValue.length > AllowedChars[0] ? AllowedChars[1] - TextAreaValue.length : AllowedChars[0] - TextAreaValue.length : "oneindig"} tekens {TextAreaValue.length > AllowedChars[0] ? "over" : "te typen"}</p>
+                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/Char_Ranges[ActivePrompt][1])}, ${lerp(0, 225, 1-(TextAreaValue.length/Char_Ranges[ActivePrompt][1]))}, 0)`,}}>Nog {Char_Ranges[ActivePrompt][1] !== Infinity ? TextAreaValue.length > Char_Ranges[ActivePrompt][0] ? Char_Ranges[ActivePrompt][1] - TextAreaValue.length : Char_Ranges[ActivePrompt][0] - TextAreaValue.length : "oneindig"} tekens {TextAreaValue.length > Char_Ranges[ActivePrompt][0] ? "over" : "te typen"}</p>
 
                 <textarea
                     value={TextAreaValue}
                     onChange={(event) => {SetTextAreaValue(event.target.value)}}
-                    minLength={AllowedChars[0]}
-                    maxLength={AllowedChars[1]}
+                    minLength={Char_Ranges[ActivePrompt][0]}
+                    maxLength={Char_Ranges[ActivePrompt][1]}
                     placeholder={`Uw verhaaltje over ${Prompt}:`}/>
                 </div>
                 
 
                 <div>
-                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {SetHasStarted(false);}}>Terug</button> 
-                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {TextAreaValue.length > AllowedChars[0] ? SetStoryDone(true) : SetHasClientError(true);}}>Volgende</button>
+                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {Previous();}}>Terug</button> 
+                  <button style={{width : "25vw", height : "5vh"}} onClick={() => {Next();}}>Volgende</button>
                 </div>
               </> : !Done ?
                   <>

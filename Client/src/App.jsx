@@ -60,7 +60,7 @@ export default function App(props) {
   function Next() {
     SaveTextArea();
     SetHasClientError(false);
-    
+
     if (ActiveTextAreaValue.length >= Char_Ranges[ActivePrompt][0]) {
       SetActivePrompt(clamp(0, TextAreaValues.length - 1, ActivePrompt + 1));
       if (ActivePrompt === TextAreaValues.length - 1) {
@@ -88,7 +88,7 @@ export default function App(props) {
                 <div>
                   <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, ActiveTextAreaValue.length/Char_Ranges[ActivePrompt][1])}, ${lerp(0, 225, 1-(ActiveTextAreaValue.length/Char_Ranges[ActivePrompt][1]))}, 0)`,}}>
                     Nog {ActiveTextAreaValue.length >= Char_Ranges[ActivePrompt][0] ? Char_Ranges[ActivePrompt][1] - ActiveTextAreaValue.length : Char_Ranges[ActivePrompt][0] - ActiveTextAreaValue.length}
-                    {Math.abs(Char_Ranges[ActivePrompt][0] - ActiveTextAreaValue.length) !== 1 ? " letters" : " letter"} 
+                    {Char_Ranges[ActivePrompt][0] - ActiveTextAreaValue.length !== 1 ? " letters" : " letter"} 
                     {ActiveTextAreaValue.length > Char_Ranges[ActivePrompt][0] ? " over" : " te typen"}
                   </p>
 

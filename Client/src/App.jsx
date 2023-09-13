@@ -1,13 +1,13 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BedanktGifje from '../assets/BedanktGifje.gif';
+import { lerp } from './Functions.jsx';
+
 
 // Stops auto zooming on ios
 if(navigator.userAgent.indexOf('iPhone') > -1 ) { document.querySelector("[name=viewport]").setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1");}
 
-function lerp( a, b, alpha ) {
-  return a + alpha * ( b - a );
-}
+
 
 const Allowed_Chars_Ranges = [[50, 100], [100, 150], [200, 250], [1000, 1100], [0, Infinity]];
 const Prompts = ["Een fictief over het ontploffen van een atoombom in Amsterdam, doe dit in de stijl van een nieuwsbericht van de NOS, laat hier geen mening in doorschijnen"];
@@ -17,6 +17,10 @@ function App() {
   // Text input variables
   const [TextAreaValue, SetTextAreaValue] = useState("");
   const [Username, SetUsername] = useState("");
+
+  const [TextAreaValues, SetTextAreaValues] = useState([""]);
+  const [Prompts, SetPrompts] = useState([""]);
+  const [ActivePrompt, SetActivePrompt] = useState(0);
 
   // Test parameter variables
   const [AllowedChars] = useState(Allowed_Chars_Ranges[Math.round( 4 * Math.random())]);
@@ -32,6 +36,17 @@ function App() {
   const [HasServerError, SetHasServerError] = useState(false);
   const [HasClientError, SetHasClientError] = useState(false);
   
+  useEffect(() => {
+    var AmountOfPrompts = Math.round( 2 * Math.random());
+
+    var TextAreaValues = [].fill("", 0, AmountOfPrompts);
+    SetTextAreaValues(TextAreaValues);
+
+    var Prompts = [].fill(Allowed_Chars_Ranges[Math.round( 4 * Math.random())], 0, AmountOfPrompts);
+    SetPrompts(Prompts);
+  }, []);
+  
+
   function Send_Data() {
     Set_Loading(true);
 
@@ -58,7 +73,7 @@ function App() {
                 <p>Schrijf een verhaaltje {AllowedChars[1] !== Infinity ? `van tussen de ${AllowedChars[0]} en ${AllowedChars[1]} tekens` : null} over {Prompt}. {AllowedChars[1] === Infinity ? "Er is geen woord limiet" : null}</p>
                 <div>
                   
-                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars[1])}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars[1]))}, 0)`,}}>Nog {AllowedChars[1] !== Infinity ? AllowedChars[1] - TextAreaValue.length : "oneindig"} tekens {TextAreaValue.length > AllowedChars[0] ? "over" : "te typen"}</p>
+                <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, TextAreaValue.length/AllowedChars[1])}, ${lerp(0, 225, 1-(TextAreaValue.length/AllowedChars[1]))}, 0)`,}}>Nog {AllowedChars[1] !== Infinity ? TextAreaValue.length > AllowedChars[0] ? AllowedChars[1] - TextAreaValue.length : AllowedChars[0] - TextAreaValue.length : "oneindig"} tekens {TextAreaValue.length > AllowedChars[0] ? "over" : "te typen"}</p>
 
                 <textarea
                     value={TextAreaValue}
@@ -81,7 +96,7 @@ function App() {
                     <div>
                       <button style={{width : "20vw", height : "6vh"}} onClick={() => {SetStoryDone(false); SetHasClientError(false);}}>Ga terug</button>
                       <input style={{width : "50vw", height : "5vh"}} value={Username} placeholder="Je naam: Anoniem" onChange={(event) => {SetUsername(event.target.value);}} maxLength={16}></input>
-                      <button style={{width : "20vw", height : "6vh"}} onClick={() => {if(!Loading) {Send_Data()}}}>Verstuur</button>
+                      <button style={{width : "20vw", height : "6vh"}} onClick={() => {if(!Loading) {Send_Data();}}}>Verstuur</button>
                     </div>
                     {Loading ? <p id='Loading_Message'>Aan het versturen...</p> : null}
                     {HasServerError ? <p id='Error_Message'>Er is iets fout gegaan, probeer het nog eens!</p> : null}

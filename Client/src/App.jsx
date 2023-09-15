@@ -9,6 +9,7 @@ export default function App(props) {
   
   // Text input variables
   const [Username, SetUsername] = useState("");
+  const [UserBirth, SetUserBirth] = useState(new Date().toDateString());
   const [ActiveTextAreaValue, SetActiveTextAreaValue] = useState("");
   const [TextAreaValues, SetTextAreaValues] = useState(Array(props.AmountOfPrompts).fill(""));
   const [Char_Ranges] = useState(Standard_Char_Ranges.slice(0, props.AmountOfPrompts));
@@ -35,7 +36,8 @@ export default function App(props) {
       TextAreaValues : TextAreaValues,
       Char_Ranges : Char_Ranges,
       Prompt : Prompt,
-      Date : Date.now()
+      Date : Date.now(),
+      UserBirth : UserBirth
     })}).then(() => {SetDone(true); Set_Loading(false)}).catch(() => {SetHasServerError(true); Set_Loading(false)});
   }
 
@@ -113,6 +115,8 @@ export default function App(props) {
                     <div>
                       <button style={{width : "20vw", height : "6vh"}} onClick={() => {SetStoryDone(false); SetHasClientError(false);}}>Ga terug</button>
                       <input style={{width : "50vw", height : "5vh"}} value={Username} placeholder="Je naam: Anoniem" onChange={(event) => {SetUsername(event.target.value);}} maxLength={16}></input>
+                      <p style={{fontWeight : 'bold'}}>Uw geboortedatum (blijft anoniem):</p>
+                      <input type={'date'} style={{width : "50vw", height : "5vh"}} value={UserBirth} onChange={(event) => {SetUserBirth(event.target.value);}}></input>
                       <button style={{width : "20vw", height : "6vh"}} onClick={() => {if(!Loading) {Send_Data();}}}>Verstuur</button>
                     </div>
                     {Loading ? <p id='Loading_Message'>Aan het versturen...</p> : null}

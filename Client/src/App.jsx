@@ -3,7 +3,7 @@ import { useState } from 'react';
 import BedanktGifje from '../assets/BedanktGifje.gif';
 import { lerp, clamp } from './Functions.jsx';
 
-const Standard_Char_Ranges = [[1, 50], [100, 150], [250, 300], [400, 450], [800, 850], [1000, 1050]]
+const Standard_Char_Ranges = [[0, 50], [100, 150], [250, 300], [400, 450], [800, 850], [1000, 1050]]
 
 export default function App(props) {
   
@@ -85,13 +85,13 @@ export default function App(props) {
               <>
                 <h1>{props.AmountOfPrompts - ActivePrompt < props.AmountOfPrompts ? `Nog maar ${props.AmountOfPrompts - ActivePrompt} ${props.AmountOfPrompts - ActivePrompt !== 1 ? "verhaaltjes" : "verhaaltje"}!` : `Daar gaan we dan!`}</h1>
                 {HasClientError ? <p id='Error_Message'>Nog niet genoeg letters! Vul iets meer in en probeer het opnieuw</p> : null} 
-                <p>Schrijf een verhaaltje van tussen de <span>{Char_Ranges[ActivePrompt][0]}</span> en <span>{Char_Ranges[ActivePrompt][1]}</span> letters. De opdracht is: {Prompt}</p>
+                <p>Schrijf een verhaaltje van tussen de <span>{Char_Ranges[ActivePrompt][0]}</span> en <span>{Char_Ranges[ActivePrompt][1]}</span> letters. De opdracht is: <span style={{fontStyle : 'italic', fontWeight : 'normal'}}>{Prompt}</span></p>
 
                 <div>
                   <p id='Letter_Counter' style={{color : `rgb(${lerp(0, 225, ActiveTextAreaValue.length/Char_Ranges[ActivePrompt][1])}, ${lerp(0, 225, 1-(ActiveTextAreaValue.length/Char_Ranges[ActivePrompt][1]))}, 0)`,}}>
                     Nog {ActiveTextAreaValue.length >= Char_Ranges[ActivePrompt][0] ? Char_Ranges[ActivePrompt][1] - ActiveTextAreaValue.length : Char_Ranges[ActivePrompt][0] - ActiveTextAreaValue.length}
                     {Char_Ranges[ActivePrompt][0] - ActiveTextAreaValue.length !== 1 ? " letters" : " letter"} 
-                    {ActiveTextAreaValue.length > Char_Ranges[ActivePrompt][0] ? " over" : " te typen"}
+                    {ActiveTextAreaValue.length >= Char_Ranges[ActivePrompt][0] ? " over" : " te typen"}
                   </p>
 
                   <textarea
@@ -110,7 +110,7 @@ export default function App(props) {
               </> : !Done ?
                   <>
                     <h1>Bijna klaar!</h1>
-                    <p>We hebben alleen nog uw naam nodig, geen behoefte deze te geven? Laat hem dan leeg!</p>
+                    <p>We hebben alleen nog uw naam en leeftijd nodig, geen behoefte uw naam te geven? Laat dit veld dan leeg!</p>
                     
                     <div>
                       <button style={{width : "20vw", height : "6vh"}} onClick={() => {SetStoryDone(false); SetHasClientError(false);}}>Ga terug</button>
@@ -125,7 +125,7 @@ export default function App(props) {
                   <>
                     <p id='Thanks_Message'>Verstuurd! Bedankt voor uw tijd :)</p>
                     <img src={BedanktGifje}></img>
-                    <button style={{width : "25vw", height : "5vh"}} onClick={() => {location.reload()}}>Reset</button> 
+                    <button style={{width : "25vw", height : "5vh"}} onClick={() => {location.reload()}}>Resetten</button> 
                   </>
         :
         <>
